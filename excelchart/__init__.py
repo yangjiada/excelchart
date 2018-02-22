@@ -6,8 +6,9 @@ Elementary Math Library. (For demonstration purpose only)
 """
 
 from .excelchart import ExcelChart
+from .excelchart import Chart
 
-__version__ = "0.0.1"
+__version__ = "0.0.1a1"
 __short_description__ = "Simply create a excel chart."
 __license__ = "MIT"
 __author__ = "Jan Yang"

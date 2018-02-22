@@ -4,7 +4,6 @@
 """
 @author: Jan Yang
 @software: PyCharm Community Edition
-@time: 2017/12/26 13:14
 """
 
 
@@ -55,10 +54,6 @@ class Chart(object):
         self.worksheet.write_row('A1', self.frame.columns, self.bold)
 
         for col in range(self.shape[1]):
-            """
-            self.worksheet.write_column('{}2'.format(self.uppercase[col]), self.data[:, col],
-                                        self.date_format if date_parser and col == 0 else None)
-            """
             self.worksheet.write_column(1, col, self.data[:, col],
                                         self.date_format if date_parser and col == 0 else None)
 
@@ -68,24 +63,12 @@ class Chart(object):
     def add_series(self, data_labels, overlap=0, gap=150):
         """ Add one or more data series.
 
-        :param data_labels:
-        :param overlap:
-        :param gap:
+        :param data_labels: bool
+        :param overlap: int, default 0
+        :param gap: int, default 150
         :return:
         """
-        """
-        for num in range(1, self.shape[1]):
-            self.chart.add_series({
-                'name': '={}!${}$1'.format(self.sheet_name, self.uppercase[num]),
-                'categories': '={}!${col}$2:${col}${row}'.format(self.sheet_name, col=self.uppercase[0],
-                                                                 row=self.shape[0] + 1),
-                'values': '={}!${col}$2:${col}${row}'.format(self.sheet_name, col=self.uppercase[num],
-                                                             row=self.shape[0] + 1),
-                'data_labels': {'value': data_labels},
-                'overlap': overlap,
-                'gap': gap
-            })
-        """
+
         for num in range(1, self.shape[1]):
             '[sheet_name, first_row, first_col, last_row, last_col]'
             self.chart.add_series({
@@ -97,13 +80,13 @@ class Chart(object):
                 'gap': gap
             })
 
-    def set_size(self, width=480, height=350, x_scale=0, y_scale=0, x_offset=0, y_offset=0):
+    def set_size(self, width=480, height=350, x_scale=1, y_scale=1, x_offset=0, y_offset=0):
         """ Set the dimensions of the chart.
 
         :param width: int, default 480
         :param height: int, default 350
-        :param x_scale: int, default 0
-        :param y_scale: int, default 0
+        :param x_scale: int, default 5
+        :param y_scale: int, default 3
         :param x_offset: int, default 0
         :param y_offset: int, default 0
         :return:
@@ -1395,6 +1378,7 @@ if __name__ == '__main__':
     ec = ExcelChart('chart.xlsx')
 
     ax = ec.bar(bar, sheet_name='bar', legend='top', y_limit=(20, 70))
+    # ax.set_size()
     # ax.set_title('标题ABC123')
     # ax.set_legend('top')
     # ax.set_x_axis('标题ABC123')

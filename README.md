@@ -53,17 +53,26 @@ python setup.py install
 ### 绘制柱形图
 
 ```python
+# 导入相关库
 import pandas as pd
 from excelchart import ExcelChart
 
-data = pd.read_excel('data.xlsx')
-ec = ExcelChart('chart.xlsx')
+# 绘图数据
+data = pd.DataFrame({
+    'name': ['A', 'B', 'C', 'D', 'E', 'F'],
+    'series1': [10, 40, 50, 20, 10, 50],
+    'series2': [30, 60, 70, 50, 40, 30]
+})
 
-chart = ec.bar(data)
+# 创建ExcelChart并添加柱形图
+ec = ExcelChart('chart.xlsx')
+chart = ec.column(data)
+
+# 保存图表
 ec.save()
 ```
 
-
+![]()
 
 ### 绘制多个图表
 
@@ -71,23 +80,54 @@ ec.save()
 import pandas as pd
 from excelchart import ExcelChart
 
+data = pd.DataFrame({
+    'name': ['A', 'B', 'C', 'D', 'E', 'F'],
+    'series1': [10, 40, 50, 20, 10, 50],
+    'series2': [30, 60, 70, 50, 40, 30]
+})
 
+data2 = pd.DataFrame({
+    'category': ['A', 'B', 'C', 'D', 'E'],
+    'value': [30, 60, 70, 50, 30]
+})
+
+ec = ExcelChart('chart.xlsx')
+column = ec.column(data)
+pie = ec.pie(data2)
+
+ec.save()
 ```
 
-
+![]()
 
 ## 设置图表参数
 
 ExcelChart提供了几十个函数来设置图表参数，包括标题、图例、坐标轴、网格线等。
 
+```python
+import pandas as pd
+from excelchart import ExcelChart
 
+data = pd.DataFrame({
+    'name': ['A', 'B', 'C', 'D', 'E', 'F'],
+    'series1': [10, 40, 50, 20, 10, 50],
+    'series2': [30, 60, 70, 50, 40, 30]
+})
+ec = ExcelChart('chart.xlsx')
 
-## 自定义模板
+chart = ec.column(data, sheet_name='chart', data_labels=True)  # 显示数据标签
 
-也许ExcelChart提供的默认图表
+chart.set_title('example')  # 设置图表标题
+chart.set_x_title('x axis')  # 设置x轴标题
+chart.set_y_title('y axis')  # 设置y轴标题
+chart.set_legend('top')  # 设置图例
+chart.set_size(480, 320)  # 设置图表大小
 
+ec.save()
+```
 
+![]()
 
 ## 联系作者
 
-如果您对该项目有任何意见或者提交bug，请发送邮件至jiada.yang@foxmail.com。
+如果您对该项目有任何意见或者提交bug，请发送邮件至yang.jiada@foxmail.com。
