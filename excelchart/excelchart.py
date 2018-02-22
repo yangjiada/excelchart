@@ -14,10 +14,20 @@ import xlsxwriter
 
 
 class Chart(object):
-    """ The chart of class
+    """ The chart of class.
 
     """
     def __init__(self, workbook, frame, sheet_name=None, chart_type=None, subtype=None, date_parser=False):
+        """
+
+        :param workbook: string
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param chart_type: string, default None
+        :param subtype: string, default None
+        :param date_parser: bool, default False
+        :return:
+        """
         self.workbook = workbook
         self.frame = frame
         self.sheet_name = sheet_name
@@ -145,12 +155,12 @@ class Chart(object):
 
         #     self.chart.set_title({'none': not title})
 
-    def set_legend(self, legend, font_name='Arial', font_size=10, bold=False, italic=False, underline=False,
+    def set_legend(self, legend, font='Arial', font_size=10, bold=False, italic=False, underline=False,
                    rotation=0, color='black', delete_series=None, layout=None):
         """ Set the chart legend.
 
         :param legend: string, top bottom left right overlay_left overlay_right none
-        :param font_name: string
+        :param font: string
         :param font_size: int, default 16
         :param bold: bool, default False
         :param italic: bool, default False
@@ -162,21 +172,21 @@ class Chart(object):
             layout -> (x, y, width, height)
         :return:
         """
-
-        self.chart.set_legend({
-            'position': legend,
-            'font': {
-                'name': font_name,
-                'size': font_size,
-                'bold': bold,
-                'italic': italic,
-                'underline': underline or None,
-                'rotation': rotation,
-                'color': color,
-            },
-            'delete_series': delete_series,
-            'layout': {'x': layout[0], 'y': layout[1], 'width': layout[2], 'height': layout[3]} if layout else None
-        })
+        if legend:
+            self.chart.set_legend({
+                'position': legend,
+                'font': {
+                    'name': font,
+                    'size': font_size,
+                    'bold': bold,
+                    'italic': italic,
+                    'underline': underline or None,
+                    'rotation': rotation,
+                    'color': color,
+                },
+                'delete_series': delete_series,
+                'layout': {'x': layout[0], 'y': layout[1], 'width': layout[2], 'height': layout[3]} if layout else None
+            })
 
     def set_chart_area(self, border=False, border_color='black',  width=0.75, border_transparency=50, dash_type='solid',
                        fill=False, fill_color='white', fill_transparency=0, pattern=None, gradient=None):
@@ -286,8 +296,7 @@ class Chart(object):
             }
         })
 
-    def set_up_down_bars(self, up_border_color='black', up_width=0.75, up_border_transparency=50,
-                         up_dash_type='solid',
+    def set_up_down_bars(self, up_border_color='black', up_width=0.75, up_border_transparency=50, up_dash_type='solid',
                          up_fill_color='green', up_fill_transparency=50, down_border_color='black', down_width=0.75,
                          down_border_transparency=50, down_dash_type='solid', down_fill_color='red',
                          down_fill_transparency=0):
@@ -623,20 +632,20 @@ class Chart(object):
         })
 
     def set_x_limit(self, limit):
-        """ Set the maximum and minimum for the x axis.
+        """ Set the minimum and maximum for the x axis.
 
         :param limit: tuple
-            limit -> (max, min)
+            limit -> (min, max)
         :return:
         """
         if limit:
             self.x_axis_params.update({'min': limit[0], 'max': limit[1]})
 
     def set_y_limit(self, limit):
-        """ Set the maximum and minimum for the y axis.
+        """ Set the minimum and maximum for the y axis.
 
-        :param limit:
-            limit -> (max, min)
+        :param limit: tuple
+            limit -> (min, max)
         :return:
         """
         if limit:
@@ -666,16 +675,24 @@ class Chart(object):
             'minor_unit': minor_unit
         })
 
-    def set_x_interval(self, label_interval=None, tick_interval=None):
-        self.chart.set_x_axis({
-            'interval_unit': label_interval,
-            'interval_tick': tick_interval
-        })
-
     def set_x_grid(self, major=False, minor=False, major_color='black', major_width=0.75, major_dash_type='solid',
                    major_transparency=50, minor_color='black', minor_width=0.75, minor_dash_type='solid',
                    minor_transparency=50):
-        self.chart.set_x_axis({
+        """ Set the x axis grid lines.
+
+        :param major: bool, default False
+        :param minor: bool, default False
+        :param major_color: string, default 'black'
+        :param major_width: float or int, default 0.75
+        :param major_dash_type: string, default 'solid'
+        :param major_transparency: int, default 50
+        :param minor_color: string, default 'black'
+        :param minor_width: float or int, default 0.75
+        :param minor_dash_type: string, default 'solid'
+        :param minor_transparency: int, default 50
+        :return:
+        """
+        self.x_axis_params.update({
             'major_gridlines': {
                 'visible': major,
                 'line': {
@@ -699,8 +716,21 @@ class Chart(object):
     def set_y_grid(self, major=False, minor=False, major_color='black', major_width=0.75, major_dash_type='solid',
                    major_transparency=50, minor_color='black', minor_width=0.75, minor_dash_type='solid',
                    minor_transparency=50):
+        """ Set the y axis grid lines.
 
-        self.chart.set_y_axis({
+        :param major: bool, default False
+        :param minor: bool, default False
+        :param major_color: string, default 'black'
+        :param major_width: float or int, default 0.75
+        :param major_dash_type: string, default 'solid'
+        :param major_transparency: int, default 50
+        :param minor_color: string, default 'black'
+        :param minor_width: float or int, default 0.75
+        :param minor_dash_type: string, default 'solid'
+        :param minor_transparency: int, default 50
+        :return:
+        """
+        self.y_axis_params.update({
             'major_gridlines': {
                 'visible': major,
                 'line': {
@@ -752,41 +782,124 @@ class Chart(object):
         self.y_axis_params.update({'crossing': category})
 
     def set_x_position(self, category):
-        """
+        """ Set the x axis position.
 
-        :param category: on_tick or between
+        :param category: string, on_tick or between, default 'between'
         :return:
         """
-        self.chart.set_x_axis({'position_axis': category})
+        self.x_axis_params.update({'position_axis': category})
 
     def set_y_position(self, category):
-        self.chart.set_y_axis({'position_axis': category})
+        """ Set the y axis position.
 
-    def set_x_log(self, base):
+        :param category: string, on_tick or between, default 'between'
+        :return:
+        """
+        self.y_axis_params.update({'position_axis': category})
+
+    def set_x_log(self, base=10):
+        """ Set the x axis logarithmic scale.
+
+        :param base: int, default 10
+        :return:
+        """
         self.chart.set_x_axis({'log_base': base})
 
-    def set_y_log(self, base):
+    def set_y_log(self, base=10):
+        """ Set the y axis logarithmic scale.
+
+        :param base: int, default 10
+        :return:
+        """
         self.chart.set_y_axis({'log_base': base})
 
     def set_x_visible(self, visible=True):
-        self.chart.set_x_axis({'visible': visible})
+        """ Configure the visibility of the x axis.
+
+        :param visible:
+        :return:
+        """
+        self.x_axis_params.update({'visible': visible})
 
     def set_y_visible(self, visible=True):
-        self.chart.set_y_axis({'visible': visible})
+        """ Configure the visibility of the y axis.
 
-    def set_x_type(self, category):
-        if category == 'date':
-            self.chart.set_x_axis({'date_axis': True})
-        elif category == 'text':
-            self.chart.set_x_axis({'text_axis': True})
+        :param visible:
+        :return:
+        """
+        self.y_axis_params.update({'visible': visible})
+
+    def set_x_text_axis(self):
+        """ Set x axis as a text axis.
+
+        :return:
+        """
+        self.x_axis_params.update({'text_axis': True})
+
+    def set_y_text_axis(self):
+        """ Set x axis as a text axis
+        :return:
+        """
+        self.y_axis_params.update({'text_axis': True})
+
+    def set_x_date_axis(self, major_unit, minor_unit, major_unit_type, minor_unit_type):
+        """ Set x axis as a date axis.
+
+        :param major_unit: int
+        :param minor_unit: int
+        :param major_unit_type: string
+        :param minor_unit_type: string
+        :return:
+        """
+        self.x_axis_params.update({
+            'date_axis': True,
+            'major_unit': major_unit,
+            'minor_unit': minor_unit,
+            'major_unit_type': major_unit_type,
+            'minor_unit_type': minor_unit_type
+        })
+
+    def set_y_date_axis(self, major_unit, minor_unit, major_unit_type, minor_unit_type):
+            """ Set x axis as a date axis.
+
+            :param major_unit: int
+            :param minor_unit: int
+            :param major_unit_type: string
+            :param minor_unit_type: string
+            :return:
+            """
+            self.y_axis_params.update({
+                'date_axis': True,
+                'major_unit': major_unit,
+                'minor_unit': minor_unit,
+                'major_unit_type': major_unit_type,
+                'minor_unit_type': minor_unit_type
+            })
 
     def set_x_display_units(self, units, units_label=False):
+        """ Set the x axis display units.
+
+        :param units: string
+        :param units_label: bool, default False
+        :return:
+        """
         self.chart.set_x_axis({'display_units': units, 'display_units_visible': units_label})
 
     def set_y_display_units(self, units, units_label=False):
+        """ Set the y axis display units.
+
+        :param units: string
+        :param units_label: bool, default False
+        :return:
+        """
         self.chart.set_y_axis({'display_units': units, 'display_units_visible': units_label})
 
     def save(self, chart_sheet=None):
+        """ Save the chart for chart sheet or work sheet.
+
+        :param chart_sheet:
+        :return:
+        """
         self.chart.set_x_axis(self.x_axis_params)
         self.chart.set_y_axis(self.y_axis_params)
         if chart_sheet:
@@ -797,240 +910,475 @@ class Chart(object):
 
 
 class ExcelChart(object):
-    def __init__(self, filename):
-        # self._filename = filename
+    """ Excel Chart Class.
 
-        self._workbook = xlsxwriter.Workbook(filename)
+    """
+    def __init__(self, filename):
+        """
+
+        :param filename: string
+        :return:
+        """
+        self._filename = filename
+        self._workbook = xlsxwriter.Workbook(self._filename)
         self._bold = self._workbook.add_format({'bold': 1})
         self._date_format = self._workbook.add_format({'num_format': 'yyyy-mm-dd'})
         self._charts = []
 
-    def bar(self, frame, sheet_name=None,  subtype=None, data_labels=False, title=None, x_label=None, y_label=None,
-            x_grid=False, y_grid=False, x_reverse=False, y_reverse=False, x_limit=None, y_limit=None, size=None,
-            legend=None, chart_sheet=None, font_name='Arial', overlap=0, gap=150, table=False
-            ):
+    def column(self, frame, sheet_name=None, subtype=None, data_labels=False, overlap=0, gap=150, title=None,
+               font='Arial', legend=None, x_grid=False, y_grid=False, x_limit=None, y_limit=None, x_title=None,
+               y_title=None, x_reverse=False, y_reverse=False, table=False, size=None, chart_sheet=None
+               ):
+        """ Create a Column chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param subtype: string, stacked percent_stacked, default None
+        :param data_labels: bool, default False
+        :param overlap: int, default 0
+        :param gap: int, default 150
+        :param title: string, default None
+        :param font: string, default 'Arial'
+        :param legend: string, default None
+        :param x_grid: bool, default False
+        :param y_grid: bool, default False
+        :param x_limit: tuple, default None
+        :param y_limit: tuple, default None
+        :param x_title: string, default None
+        :param y_title: string, default None
+        :param x_reverse: bool, default False
+        :param y_reverse: bool, default False
+        :param table: bool, default, False
+        :param size: tuple, default None
+        :param chart_sheet: string, default None
+        :return:
+        """
 
         chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='column', subtype=subtype)
 
         chart.add_series(data_labels=data_labels, overlap=overlap, gap=gap)
 
-        if size:
-            chart.set_size(width=size[0], height=size[0])
-
-        chart.set_title(title=title, font=font_name)
+        chart.set_title(title=title, font=font)
         chart.set_legend(legend=legend)
-        chart.set_chart_area(border=True, fill=True)
-        chart.set_plot_area(border=False, fill=True)
-        chart.set_style(None)
-        # chart.set_table()
-
-        # chart.set_x_title(title=x_label, font=font_name)
-        # chart.set_y_title(title=y_label, font=font_name)
         chart.set_x_grid(major=x_grid, minor=False)
         chart.set_y_grid(major=y_grid, minor=False)
-        chart.set_x_reverse(reverse=x_reverse)
-        chart.set_y_reverse(reverse=y_reverse)
         chart.set_x_limit(limit=x_limit)
         chart.set_y_limit(limit=y_limit)
-        # chart.set_x_title('xxx')
-        # chart.set_x_label(font='华文彩云')
 
-        # chart.set_x_axis()
+        if x_title:
+            chart.set_x_title(title=x_title, font=font)
 
-        # chart.set_x_tick_mark()
-        # chart.set_y_tick_mark()
+        if y_title:
+            chart.set_y_title(title=y_title, font=font)
+
+        if x_reverse:
+            chart.set_x_reverse()
+
+        if y_reverse:
+            chart.set_y_reverse()
+
+        if table:
+            chart.set_table(font=font)
+
+        if size:
+            chart.set_size(width=size[0], height=size[1])
 
         self._charts.append((chart, chart_sheet))
 
         return chart
 
-    def barh(self, frame, sheet_name=None,  subtype=None, data_labels=False, title=None, x_label=None, y_label=None,
-             x_grid=False, y_grid=False, x_reverse=False, y_reverse=False, x_limit=None, y_limit=None, size=None,
-             legend=None, chart_sheet=None, font_name='微软雅黑', overlap=0, gap=150, table=False
-             ):
+    def bar(self, frame, sheet_name=None, subtype=None, data_labels=False, overlap=0, gap=150, title=None,
+            font='Arial', legend=None, x_grid=False, y_grid=False, x_limit=None, y_limit=None, x_title=None,
+            y_title=None, x_reverse=False, y_reverse=False, table=False, size=None, chart_sheet=None
+            ):
+        """ Create a Bar chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param subtype: string, stacked percent_stacked, default None
+        :param data_labels: bool, default False
+        :param overlap: int, default 0
+        :param gap: int, default 150
+        :param title: string, default None
+        :param font: string, default 'Arial'
+        :param legend: string, default None
+        :param x_grid: bool, default False
+        :param y_grid: bool, default False
+        :param x_limit: tuple, default None
+        :param y_limit: tuple, default None
+        :param x_title: string, default None
+        :param y_title: string, default None
+        :param x_reverse: bool, default False
+        :param y_reverse: bool, default False
+        :param table: bool, default, False
+        :param size: tuple, default None
+        :param chart_sheet: string, default None
+        :return:
+        """
         chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='bar', subtype=subtype)
+
         chart.add_series(data_labels=data_labels, overlap=overlap, gap=gap)
-        chart.set_title(title=title, font=font_name)
-        chart.set_x_title(title=x_label, font=font_name)
-        chart.set_y_title(title=y_label, font=font_name)
+
+        chart.set_title(title=title, font=font)
+        chart.set_legend(legend=legend)
         chart.set_x_grid(major=x_grid, minor=False)
         chart.set_y_grid(major=y_grid, minor=False)
-        chart.set_x_reverse(reverse=x_reverse)
-        chart.set_y_reverse(reverse=y_reverse)
         chart.set_x_limit(limit=x_limit)
         chart.set_y_limit(limit=y_limit)
-        chart.set_table()
-        chart.set_legend(legend=legend)
+
+        if x_title:
+            chart.set_x_title(title=x_title, font=font)
+
+        if y_title:
+            chart.set_y_title(title=y_title, font=font)
+
+        if x_reverse:
+            chart.set_x_reverse()
+
+        if y_reverse:
+            chart.set_y_reverse()
+
+        if table:
+            chart.set_table(font=font)
+
         if size:
-            chart.set_size(width=size[0], height=size[0])
-        # chart.save(chart_sheet=chart_sheet)
+            chart.set_size(width=size[0], height=size[1])
+
         self._charts.append((chart, chart_sheet))
 
         return chart
 
-    def line(self, frame, sheet_name=None, subtype=None, data_labels=False, title=None, x_label=None, y_label=None,
-             x_grid=False, y_grid=False, x_reverse=False, y_reverse=False, x_limit=None, y_limit=None, size=None,
-             legend=None, chart_sheet=None, font_name='微软雅黑', overlap=0, gap=150, table=False
+    def line(self, frame, sheet_name=None, data_labels=False, overlap=0, gap=150, title=None, font='Arial',
+             legend=None, x_grid=False, y_grid=False, x_limit=None, y_limit=None, x_title=None, y_title=None,
+             x_reverse=False, y_reverse=False, table=False, size=None, chart_sheet=None
              ):
-        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='line', subtype=subtype)
+        """ Create a Line chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param data_labels: bool, default False
+        :param title: string, default None
+        :param x_title: string, default None
+        :param y_title: string, default None
+        :param x_grid: bool, default False
+        :param y_grid: bool, default False
+        :param x_reverse: bool, default False
+        :param y_reverse: bool, default False
+        :param x_limit: tuple, default None
+        :param y_limit: tuple, default None
+        :param size: tuple, default None
+        :param legend: string, default None
+        :param chart_sheet: string, default None
+        :param font: string, default 'Arial'
+        :param overlap: int, default 0
+        :param gap: int, default 150
+        :param table: bool, default, False
+        :return:
+        """
+        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='line')
+
         chart.add_series(data_labels=data_labels, overlap=overlap, gap=gap)
-        chart.set_title(title=title, font=font_name)
 
-        # chart.set_x_axis(font_name='微软雅黑')
-        #
-        # chart.set_x_title(title=x_label, font=font_name)
-        # chart.set_y_title(title=y_label, font=font_name)
-        # chart.set_x_grid(major=x_grid)
-        # chart.set_y_grid(major=y_grid)
-        # chart.set_x_reverse(reverse=x_reverse)
-        # chart.set_y_reverse(reverse=y_reverse)
-        # chart.set_x_limit(limit=(3, 7))
-        # chart.set_y_limit(limit=y_limit)
-        # chart.set_table()
-        # chart.set_legend(legend=legend)
-        # chart.set_up_down_bars(False)
-        # chart.set_drop_lines()
-        # chart.set_high_low_lines()
-
-        if size:
-            chart.set_size(width=size[0], height=size[0])
-
-        self._charts.append((chart, chart_sheet))
-
-        return chart
-
-    def pie(self, frame, sheet_name=None, title=None, chart_sheet=None, font_name='微软雅黑', subtype=None, legend=None,
-            size=None, rotation=0):
-        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='pie', subtype=subtype)
-        chart.add_series(data_labels=None)
-        chart.set_title(title=title, font=font_name)
+        chart.set_title(title=title, font=font)
         chart.set_legend(legend=legend)
+        chart.set_x_grid(major=x_grid, minor=False)
+        chart.set_y_grid(major=y_grid, minor=False)
+        chart.set_x_limit(limit=x_limit)
+        chart.set_y_limit(limit=y_limit)
+
+        if x_title:
+            chart.set_x_title(title=x_title, font=font)
+
+        if y_title:
+            chart.set_y_title(title=y_title, font=font)
+
+        if x_reverse:
+            chart.set_x_reverse()
+
+        if y_reverse:
+            chart.set_y_reverse()
+
+        if table:
+            chart.set_table(font=font)
+
         if size:
-            chart.set_size(width=size[0], height=size[0])
-        chart.set_rotation(rotation)
+            chart.set_size(width=size[0], height=size[1])
+
         self._charts.append((chart, chart_sheet))
 
         return chart
 
-    def radar(self, frame, sheet_name=None, title=None, size=None, data_labels=False, subtype=None,
-              chart_sheet=None, font_name='微软雅黑', legend=None):
+    def pie(self, frame, sheet_name=None, data_labels=False, title=None, font='Arial', legend=None, rotation=0,
+            size=None, chart_sheet=None):
+        """ Create a Pie chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param data_labels: bool, default False
+        :param title: string, default None
+        :param font: string, default 'Arial'
+        :param legend: string, default None
+        :param rotation: int, default 0
+        :param size: tuple, default None
+        :param chart_sheet: string, default None
+        :return:
+        """
+        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='pie')
+        chart.add_series(data_labels=data_labels)
+        chart.set_title(title=title, font=font)
+        chart.set_legend(legend=legend, font=font)
+        chart.set_rotation(rotation)
+
+        if size:
+            chart.set_size(width=size[0], height=size[1])
+
+        self._charts.append((chart, chart_sheet))
+
+        return chart
+
+    def radar(self, frame, sheet_name=None, subtype=None, data_labels=False, title=None, font='Arial', legend=None,
+              major_grid=True, minor_grid=False, size=None, chart_sheet=None):
+        """ Create a Radar chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param subtype: string, with_markers filled, default None
+        :param data_labels: bool, default False
+        :param title: string, default None
+        :param font: string, default 'Arial'
+        :param legend: string, default None
+        :param major_grid: bool, default True
+        :param minor_grid: bool, default False
+        :param size: tuple, default None
+        :param chart_sheet: string, default None
+        :return:
+        """
         chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='radar', subtype=subtype)
         chart.add_series(data_labels=data_labels)
-        chart.set_title(title=title, font=font_name)
-        chart.set_legend(legend=legend)
+        chart.set_title(title=title, font=font)
+        chart.set_legend(legend=legend, font=font)
+        chart.set_y_grid(major=major_grid, minor=minor_grid)
+
         if size:
-            chart.set_size(width=size[0], height=size[0])
+            chart.set_size(width=size[0], height=size[1])
+
         self._charts.append((chart, chart_sheet))
 
         return chart
 
-    def scatter(self, frame, sheet_name=None,  subtype=None, data_labels=False, title=None, x_label=None, y_label=None,
-                x_grid=False, y_grid=False, x_reverse=False, y_reverse=False, x_limit=None, y_limit=None, size=None,
-                legend=None, chart_sheet=None, font_name='微软雅黑', overlap=0, gap=150, table=False
+    def scatter(self, frame, sheet_name=None, subtype=None, data_labels=False, overlap=0, gap=150, title=None,
+                font='Arial', legend=None, x_grid=False, y_grid=False, x_limit=None, y_limit=None, x_title=None,
+                y_title=None, x_reverse=False, y_reverse=False, table=False, size=None, chart_sheet=None
                 ):
+        """ Create a Scatter chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param subtype: string, straight_with_markers straight smooth_with_markers smooth, default None
+        :param data_labels: bool, default False
+        :param overlap: int, default 0
+        :param gap: int, default 150
+        :param title: string, default None
+        :param font: string, default 'Arial'
+        :param legend: string, default None
+        :param x_grid: bool, default False
+        :param y_grid: bool, default False
+        :param x_limit: tuple, default None
+        :param y_limit: tuple, default None
+        :param x_title: string, default None
+        :param y_title: string, default None
+        :param x_reverse: bool, default False
+        :param y_reverse: bool, default False
+        :param table: bool, default, False
+        :param size: tuple, default None
+        :param chart_sheet: string, default None
+        :return:
+        """
         chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='scatter', subtype=subtype)
+
         chart.add_series(data_labels=data_labels, overlap=overlap, gap=gap)
-        chart.set_title(title=title, font=font_name)
 
-        chart.set_x_title(title=x_label, font=font_name)
-        chart.set_y_title(title=y_label, font=font_name)
-
+        chart.set_title(title=title, font=font)
+        chart.set_legend(legend=legend)
         chart.set_x_grid(major=x_grid, minor=False)
         chart.set_y_grid(major=y_grid, minor=False)
-
-        chart.set_x_reverse(reverse=x_reverse)
-        chart.set_y_reverse(reverse=y_reverse)
-
         chart.set_x_limit(limit=x_limit)
         chart.set_y_limit(limit=y_limit)
 
-        chart.set_table()
-        chart.set_legend(legend=legend)
+        if x_title:
+            chart.set_x_title(title=x_title, font=font)
 
-        chart.set_x_tick_mark()
-        # chart.set_y_ticks()
+        if y_title:
+            chart.set_y_title(title=y_title, font=font)
+
+        if x_reverse:
+            chart.set_x_reverse()
+
+        if y_reverse:
+            chart.set_y_reverse()
+
+        if table:
+            chart.set_table(font=font)
 
         if size:
-            chart.set_size(width=size[0], height=size[0])
+            chart.set_size(width=size[0], height=size[1])
+
         self._charts.append((chart, chart_sheet))
 
         return chart
 
-    def area(self, frame, sheet_name=None,  subtype=None, data_labels=False, title=None, x_label=None, y_label=None,
-             x_grid=False, y_grid=False, x_reverse=False, y_reverse=False, x_limit=None, y_limit=None, size=None,
-             legend=None, chart_sheet=None, font_name='微软雅黑', overlap=0, gap=150, table=False
+    def area(self, frame, sheet_name=None, subtype=None, data_labels=False, overlap=0, gap=150, title=None,
+             font='Arial', legend=None, x_grid=False, y_grid=False, x_limit=None, y_limit=None, x_title=None,
+             y_title=None, x_reverse=False, y_reverse=False, table=False, size=None, chart_sheet=None
              ):
-        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='area', subtype=subtype,
-                      )
+        """ Create a Area chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param subtype: string, stacked percent_stacked, default None
+        :param data_labels: bool, default False
+        :param overlap: int, default 0
+        :param gap: int, default 150
+        :param title: string, default None
+        :param font: string, default 'Arial'
+        :param legend: string, default None
+        :param x_grid: bool, default False
+        :param y_grid: bool, default False
+        :param x_limit: tuple, default None
+        :param y_limit: tuple, default None
+        :param x_title: string, default None
+        :param y_title: string, default None
+        :param x_reverse: bool, default False
+        :param y_reverse: bool, default False
+        :param table: bool, default, False
+        :param size: tuple, default None
+        :param chart_sheet: string, default None
+        :return:
+        """
+        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='area', subtype=subtype)
+
         chart.add_series(data_labels=data_labels, overlap=overlap, gap=gap)
-        chart.set_title(title=title, font=font_name)
-        chart.set_x_title(title=x_label, font=font_name)
-        chart.set_y_title(title=y_label, font=font_name)
-        chart.set_x_grid(major=x_grid)
-        chart.set_y_grid(major=y_grid)
-        chart.set_x_reverse(reverse=x_reverse)
-        chart.set_y_reverse(reverse=y_reverse)
+        chart.set_title(title=title, font=font)
+        chart.set_legend(legend=legend)
+        chart.set_x_grid(major=x_grid, minor=False)
+        chart.set_y_grid(major=y_grid, minor=False)
         chart.set_x_limit(limit=x_limit)
         chart.set_y_limit(limit=y_limit)
-        chart.set_table()
-        chart.set_legend(legend=legend)
+
+        if x_title:
+            chart.set_x_title(title=x_title, font=font)
+
+        if y_title:
+            chart.set_y_title(title=y_title, font=font)
+
+        if x_reverse:
+            chart.set_x_reverse()
+
+        if y_reverse:
+            chart.set_y_reverse()
+
+        if table:
+            chart.set_table(font=font)
 
         if size:
-            chart.set_size(width=size[0], height=size[0])
+            chart.set_size(width=size[0], height=size[1])
 
         self._charts.append((chart, chart_sheet))
 
         return chart
 
-    def doughnut(self, frame, sheet_name=None,  subtype=None, data_labels=False, title=None, x_label=None, y_label=None,
-                 x_grid=False, y_grid=False, x_reverse=False, y_reverse=False, x_limit=None, y_limit=None, size=None,
-                 legend=None, chart_sheet=None, font_name='微软雅黑', overlap=0, gap=150, table=False
-                 ):
-        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='doughnut', subtype=subtype,
-                      )
-        chart.add_series(data_labels=data_labels, overlap=overlap, gap=gap)
-        chart.set_title(title=title, font=font_name)
-        chart.set_x_title(title=x_label, font=font_name)
-        chart.set_y_title(title=y_label, font=font_name)
-        chart.set_x_grid(major=x_grid)
-        chart.set_y_grid(major=y_grid)
-        chart.set_x_reverse(reverse=x_reverse)
-        chart.set_y_reverse(reverse=y_reverse)
-        chart.set_x_limit(limit=x_limit)
-        chart.set_y_limit(limit=y_limit)
-        chart.set_table()
-        chart.set_legend(legend=legend)
+    def doughnut(self, frame, sheet_name=None, data_labels=False, title=None, font='Arial', legend=None, rotation=0,
+                 size=None, chart_sheet=None):
+        """ Create a Doughnut chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param data_labels: bool, default False
+        :param title: string, default None
+        :param font: string, default 'Arial'
+        :param legend: string, default None
+        :param rotation: int, default 0
+        :param size: tuple, default None
+        :param chart_sheet: string, default None
+        :return:
+        """
+        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='doughnut')
+        chart.add_series(data_labels=data_labels)
+        chart.set_title(title=title, font=font)
+        chart.set_legend(legend=legend, font=font)
+        chart.set_rotation(rotation)
+
         if size:
-            chart.set_size(width=size[0], height=size[0])
+            chart.set_size(width=size[0], height=size[1])
+
         self._charts.append((chart, chart_sheet))
 
         return chart
 
-    def stock(self, frame, sheet_name=None,  subtype=None, data_labels=False, title=None, x_label=None, y_label=None,
-              x_grid=False, y_grid=False, x_reverse=False, y_reverse=False, x_limit=None, y_limit=None, size=None,
-              legend=None, chart_sheet=None, font_name='微软雅黑', overlap=0, gap=150, table=False
+    def stock(self, frame, sheet_name=None, data_labels=False, overlap=0, gap=150, title=None,
+              font='Arial', legend=None, x_grid=False, y_grid=False, x_limit=None, y_limit=None, x_title=None,
+              y_title=None, x_reverse=False, y_reverse=False, table=False, size=None, chart_sheet=None
               ):
-        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='stock', subtype=subtype,
-                      date_parser=True)
+        """ Create a Area chart.
+
+        :param frame: DataFrame
+        :param sheet_name: string, default None
+        :param data_labels: bool, default False
+        :param overlap: int, default 0
+        :param gap: int, default 150
+        :param title: string, default None
+        :param font: string, default 'Arial'
+        :param legend: string, default None
+        :param x_grid: bool, default False
+        :param y_grid: bool, default False
+        :param x_limit: tuple, default None
+        :param y_limit: tuple, default None
+        :param x_title: string, default None
+        :param y_title: string, default None
+        :param x_reverse: bool, default False
+        :param y_reverse: bool, default False
+        :param table: bool, default, False
+        :param size: tuple, default None
+        :param chart_sheet: string, default None
+        :return:
+        """
+        chart = Chart(self._workbook, frame=frame, sheet_name=sheet_name, chart_type='stock', date_parser=True)
+
         chart.add_series(data_labels=data_labels, overlap=overlap, gap=gap)
-        chart.set_title(title=title, font=font_name)
-        chart.set_x_title(title=x_label, font=font_name)
-        chart.set_y_title(title=y_label, font=font_name)
-        chart.set_x_grid(major=x_grid)
-        chart.set_y_grid(major=y_grid)
-        chart.set_x_reverse(reverse=x_reverse)
-        chart.set_y_reverse(reverse=y_reverse)
+        chart.set_title(title=title, font=font)
+        chart.set_legend(legend=legend)
+        chart.set_x_grid(major=x_grid, minor=False)
+        chart.set_y_grid(major=y_grid, minor=False)
         chart.set_x_limit(limit=x_limit)
         chart.set_y_limit(limit=y_limit)
-        chart.set_table()
-        chart.set_legend(legend=legend)
+
+        if x_title:
+            chart.set_x_title(title=x_title, font=font)
+
+        if y_title:
+            chart.set_y_title(title=y_title, font=font)
+
+        if x_reverse:
+            chart.set_x_reverse()
+
+        if y_reverse:
+            chart.set_y_reverse()
+
+        if table:
+            chart.set_table(font=font)
+
         if size:
-            chart.set_size(width=size[0], height=size[0])
+            chart.set_size(width=size[0], height=size[1])
+
         self._charts.append((chart, chart_sheet))
 
         return chart
 
     def save(self):
+        """ Save chart for Excel.
+
+        :return:
+        """
         for chart, chart_sheet in self._charts:
             chart.save(chart_sheet)
         self._workbook.close()
@@ -1039,20 +1387,20 @@ class ExcelChart(object):
 if __name__ == '__main__':
     bar = pd.read_excel('data/bar2.xlsx')
     # pie = pd.read_excel('data/pie.xlsx')
-    line = pd.read_excel('data/line.xlsx')
+    lines = pd.read_excel('data/line.xlsx')
     scatter = pd.read_excel('data/scatter.xlsx')
-    # radar = pd.read_excel('data/radar.xlsx')
+    radar = pd.read_excel('data/radar.xlsx')
     # stock = pd.read_excel('data/stock.xlsx')
 
     ec = ExcelChart('chart.xlsx')
 
-    ax = ec.bar(bar, sheet_name='bar', legend='top')
-    ax.set_title('标题ABC123')
-    ax.set_legend('top')
+    ax = ec.bar(bar, sheet_name='bar', legend='top', y_limit=(20, 70))
+    # ax.set_title('标题ABC123')
+    # ax.set_legend('top')
     # ax.set_x_axis('标题ABC123')
-    ax.set_x_title('标题ABC123')
-    ax.set_x_label(interval_unit=2)
-    ax.set_x_tick(interval_unit=2, major_type='inside', minor_type='outside')
+    # ax.set_x_title('标题ABC123')
+    # ax.set_x_label(interval_unit=2)
+    # ax.set_x_tick(interval_unit=2, major_type='inside', minor_type='outside')
     # ax.set_x_interval(label_interval=2, tick_interval=2)
     # ax.set_x_limit(limit=(0.5, 5.5))
     # ax.set_x_tick_mark(major_type='inside')
@@ -1069,8 +1417,7 @@ if __name__ == '__main__':
     # ax6 = ec.scatter(scatter, sheet_name='scatter')
     # ax6.set_y_grid()
     # ax7 = ec.doughnut(pie, sheet_name='doughnut')
-    # ax8 = ec.radar(radar, sheet_name='radar')
+    ax8 = ec.radar(radar, sheet_name='radar')
     # ax9 = ec.stock(stock)
 
     ec.save()
-    print()
