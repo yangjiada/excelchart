@@ -30,7 +30,7 @@ ExcelChart是基于xlsxwriter封装的库，让用户更加简单地创建Excel�
 pip install excelchart
 ```
 
-如果您没有安装pip，请查阅https://pip.pypa.io/en/stable/installing/获得详细的安装教程。
+如果您没有安装pip，请查阅https://pip.pypa.io/en/stable/installing获得详细的安装教程。
 
 
 
@@ -72,7 +72,7 @@ chart = ec.column(data)
 ec.save()
 ```
 
-![]()
+![柱形图](https://github.com/yangjiada/excelchart/blob/master/img/1519297879.jpg?raw=true)
 
 ### 绘制多个图表
 
@@ -98,7 +98,7 @@ pie = ec.pie(data2)
 ec.save()
 ```
 
-![]()
+![饼图](https://github.com/yangjiada/excelchart/blob/master/img/1519297915.jpg?raw=true)
 
 ## 设置图表参数
 
@@ -126,7 +126,7 @@ chart.set_size(480, 320)  # 设置图表大小
 ec.save()
 ```
 
-![]()
+![更改设置后的柱状图](https://github.com/yangjiada/excelchart/blob/master/img/1519296701.jpg?raw=true)
 
 ## 联系作者
 
